@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Memory Leak Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 2em; background: #f9f9f9; color: #222; }
+        h1, h2, h3 { color: #b30000; }
+        pre { background: #eee; padding: 1em; overflow-x: auto; }
+        code { background: #eee; padding: 2px 4px; }
+        blockquote { border-left: 4px solid #ccc; margin: 1em 0; padding-left: 1em; color: #555; }
+    </style>
+</head>
+<body>
+
+<h1>🚨 ChatGPT leaked content from another session — memory isolation is broken</h1>
+
+<p>On June 1st, 2025, I caught ChatGPT (GPT-4o, web version) referencing a specific string of text that I <strong>had only typed in another session</strong>.</p>
+
+<blockquote>
+<p>The phrase was nonsense in Latin characters — something like:<br>
+<code>F relf jz cjühfzbk rflh</code><br>
+...which makes sense <strong>only</strong> if you recognize it as a mistyped Russian sentence using a German QWERTZ keyboard layout.</p>
+</blockquote>
+
+<p>I had configured ChatGPT to auto-correct such inputs. But here's the thing:</p>
+
+<h2>This string was <em>never entered</em> in the session where the model reacted to it.</h2>
+
+<ul>
+<li>It was never typed or pasted in that session;</li>
+<li>It was not stored in memory (I checked my persistent instructions);</li>
+<li>It was never mentioned or referred to — not even implicitly;</li>
+<li>And yet the model interpreted and responded to it directly, as if I had just written it.</li>
+</ul>
+
+<h2>🔥 This is a memory leak. Plain and simple.</h2>
+
+<p>It means context — or some residual token cache — <strong>bled from one session into another</strong>. That's a serious breach of OpenAI's claimed session isolation.</p>
+
+<h3>What’s worse is:</h3>
+<ul>
+<li>This happened during active use — not during a refresh or restore.</li>
+<li>The source session remained inaccessible from the second — except for this <em>leaked fragment</em>.</li>
+<li>I had no way to control or inspect what crossed the line.</li>
+</ul>
+
+<h2>🧠 Why this matters</h2>
+<p>OpenAI doesn’t offer local user profiles. You can’t audit what the model sees or retains. All context is server-side and ephemeral — except when it’s not.</p>
+
+<h2>🧾 What did I do?</h2>
+<p>I reported it to OpenAI Security (<code>security@openai.com</code>).</p>
+<p>They replied with a boilerplate: <em>“Please submit via Bugcrowd, we’ll follow up if needed.”</em></p>
+
+<h2>✅ Can this be verified?</h2>
+<p>Yes. I have full logs and screenshots. If anyone seriously wants to validate this, reproduce it, or dig deeper — I’m happy to share details.</p>
+
+<p>This isn’t an edge case. This is a structural failure. And if it happened once — it can happen again.</p>
+
+<blockquote><strong>Don’t trust any claims of session isolation until OpenAI proves this cannot happen.</strong><br>
+Because right now, I have proof that it can.</blockquote>
+
+</body>
+</html>
