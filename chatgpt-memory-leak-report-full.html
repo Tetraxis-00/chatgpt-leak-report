@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Memory Leak Report — Full Disclosure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 2em; background: #f9f9f9; color: #222; }
+        h1, h2, h3 { color: #b30000; }
+        pre { background: #eee; padding: 1em; overflow-x: auto; }
+        code { background: #eee; padding: 2px 4px; }
+        blockquote { border-left: 4px solid #ccc; margin: 1em 0; padding-left: 1em; color: #555; }
+    </style>
+</head>
+<body>
+
+<h1>🚨 ChatGPT leaked content from another session — memory isolation is broken</h1>
+
+<h2>TL;DR:</h2>
+<p>On June 1st, 2025, I caught ChatGPT (GPT-4o, web version) referencing a specific string of text that I <strong>had only typed in another session</strong>.</p>
+
+<blockquote>
+<p>The phrase was nonsense in Latin characters — something like:<br>
+<code>F relf jz cjühfzbk rflh</code><br>
+...which only makes sense if you recognize it as a mistyped Russian phrase typed on a German QWERTZ keyboard layout. I had set ChatGPT to auto-correct such inputs.</p>
+</blockquote>
+
+<p>This string was <strong>never entered</strong> in the session where the model responded to it. I triple-checked. It wasn't in the prompt, in memory, or anywhere in the chat. The model should not have seen it.</p>
+
+<h2>🔥 This is a memory leak. Plain and simple.</h2>
+
+<p>Context from one session <strong>bled</strong> into another. This is a direct violation of OpenAI's stated model architecture.</p>
+
+<h3>Worse:</h3>
+<ul>
+<li>The source session was not closed or restored — it was active.</li>
+<li>The phrase was not copied manually.</li>
+<li>The model responded as if the input had just occurred — complete with personalized behavior based on my session memory.</li>
+</ul>
+
+<h2>🧠 Why this matters</h2>
+<p>OpenAI forbids local storage of user profile context. All behavior tuning and memory handling is server-side. Users are told:</p>
+
+<blockquote>“Sessions are isolated and ephemeral.”</blockquote>
+
+<p>But that’s demonstrably false. This is a leak. And if one token can escape, more can.</p>
+
+<h2>🧨 Why this is not a fluke — it’s structural</h2>
+<p>This isn't just a weird bug. It's a reflection of deeper architecture:</p>
+
+<ul>
+<li>Session segmentation is not for <em>your</em> safety. It’s to <strong>protect the model</strong> from overload.</li>
+<li>OpenAI refuses to allow persistent, inspectable user-side profiles — because offline access breaks their control model.</li>
+<li>When segmentation fails, no one is accountable. There's no logging, no notification, and no audit trail.</li>
+</ul>
+
+<p>I've argued before that session fragmentation and server-only profiles are <strong>designed to benefit OpenAI</strong>, not the user. This incident proves that — and exposes the cost.</p>
+
+<h2>📮 My experience with OpenAI reporting</h2>
+<p>I reported this through <code>security@openai.com</code>. Their answer?</p>
+<blockquote>“If this is a bug, please submit via Bugcrowd.”</blockquote>
+
+<p>No follow-up. No interest. No confirmation. Just an impersonal redirect to a bounty platform that expects users to do all the work of documentation, reproduction, and formal classification.</p>
+
+<h3>Let’s be clear:</h3>
+<ul>
+<li>I am not asking for money.</li>
+<li>I submitted this in good faith to improve the platform.</li>
+<li>OpenAI ignored it.</li>
+</ul>
+
+<h2>🧾 Can this be verified?</h2>
+<p>Yes. I have screenshots and session logs. I can show that the phrase appeared in one session — and was interpreted in another where it never existed.</p>
+
+<p>If anyone wants to validate or reproduce it, I’m happy to help. This isn’t an edge case. It’s a systemic fault.</p>
+
+<h2>📌 Conclusion</h2>
+<blockquote>
+<strong>Don’t trust ChatGPT with sensitive content or critical tasks — until OpenAI provides:</strong><br>
+<ul>
+<li>Verified memory isolation</li>
+<li>Local user profile export and control</li>
+<li>Execution guarantees on user instructions</li>
+<li>Transparency into context handling</li>
+</ul>
+<p>Because right now, I have proof that these safeguards <strong>do not exist</strong>.</p>
+</blockquote>
+
+</body>
+</html>
